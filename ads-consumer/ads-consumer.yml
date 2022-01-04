@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ads-consumer
+  labels:
+    app: ads-consumer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: ads-consumer
+      labels:
+        app: ads-consumer
+    spec:
+      containers:
+        - name: ads-consumer
+          image: palesmariann/ads-consumer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9001
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ads-consumer-config-map
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: ads-consumer
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ads-consumer-config-map
+data:
+  application.yml: |
+    server:
+          port: 9001
+    spring:
+      kafka:
+        consumer:
+          bootstrap-servers: 'my-release-kafka:9092'
+          auto-offset-reset: earliest
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    kafka:
+      topic:
+        name: ads

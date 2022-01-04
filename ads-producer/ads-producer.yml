@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ads-producer
+  labels:
+    app: ads-producer
+spec:
+  replicas: 2
+  template:
+    metadata:
+      name: ads-producer
+      labels:
+        app: ads-producer
+    spec:
+      containers:
+        - name: ads-producer
+          image: palesmariann/ads-producer:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - mountPath: /config
+              name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: ads-producer-config-map
+      restartPolicy: Always
+  selector:
+    matchLabels:
+      app: ads-producer
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ads-producer-config-map
+data:
+  application.yml: |
+    server:
+      port: 9000
+    spring:
+      kafka:
+        producer:
+          bootstrap-servers: 'my-release-kafka:9092'
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    kafka:
+      topic:
+        name: ads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ads-producer-service
+spec:
+  selector:
+    app: ads-producer
+  ports:
+    - name: asd
+      protocol: TCP
+      port: 9999
+      targetPort: 9000
+  type: LoadBalancer
