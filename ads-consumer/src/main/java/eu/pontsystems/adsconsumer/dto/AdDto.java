@@ -1,4 +1,4 @@
-package eu.pontsystems.adsproducer.model;
+package eu.pontsystems.adsconsumer.dto;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Ad {
+public class AdDto {
 
     private String name;
     private String message;

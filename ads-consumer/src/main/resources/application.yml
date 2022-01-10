@@ -3,10 +3,19 @@ server:
 spring:
   kafka:
     consumer:
-      bootstrap-servers: 'localhost:9092'
+      bootstrap-servers: 'localhost:9000'
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "eu.pontsystems.*"
+        spring.json.type.mapping: "ad:eu.pontsystems.adsconsumer.dto.AdDto"
+  data:
+    cassandra:
+      keyspace-name: ad_keyspace
+      port: 9042
+      contact-points: 127.0.0.1
+      local-datacenter: datacenter1
 kafka:
   topic:
     name: ads
